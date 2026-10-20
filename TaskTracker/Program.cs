@@ -17,43 +17,36 @@ if (File.Exists(path))
 while (true)
 {
     ShowOptions();
-    string? comand = Console.ReadLine();
+    string? command = Console.ReadLine();
     Console.Clear();
 
-    string firstCmd = comand.ToLower().Split()[0];
-    var cl = comand.Split().Length;
+    string firstCmd = command.ToLower().Split()[0];
+    var cl = command.Split().Length;
 
     if (firstCmd == "add" && cl > 1)
     {
-        int taskId = TaskRepository.AddTask(path, lastId, GetDesc(comand), tasks, options);
+        int taskId = TaskRepository.AddTask(path, lastId, GetDesc(command), tasks, options);
         Console.WriteLine($"Task added successfully (ID: {taskId})");
     }
     else if (firstCmd == "update" && cl > 2)
     {
-        int id = Convert.ToInt32(comand.Split()[1]);
-
-        TaskRepository.UpdateTask(path, tasks, id, options, desc: GetDesc(comand));
-        Console.WriteLine($"Task updated successfully (ID: {id})");
+        TaskRepository.UpdateTask(path, tasks, GetId(command), options, desc: GetDesc(command));
+        Console.WriteLine($"Task updated successfully (ID: {GetId(command)})");
     }
     else if (firstCmd == "delete" && cl > 1)
     {
-
+        TaskRepository.DeleteTask(path, tasks, options, GetId(command));
+        Console.WriteLine($"Task deleted successfully (ID: {GetId(command)})");
     }
     else if ((firstCmd == "mark-in-progress" || firstCmd == "mark-done") && cl > 1)
     {
         var newStatus = firstCmd == "mark-in-progress" ? "in-progress" : "done";
-
-        int id = Convert.ToInt32(comand.Split()[1]);
-
-        TaskRepository.UpdateTask(path, tasks, id, options, status: newStatus);
+        TaskRepository.UpdateTask(path, tasks, GetId(command), options, status: newStatus);
     }
     else if (firstCmd == "list")
     {
         List<TaskTracker.Models.Task> result;
-        if (cl > 1)
-            result = TaskRepository.ListTasks(comand.Split()[1], tasks);
-        else
-            result = TaskRepository.ListTasks("", tasks);
+        result = TaskRepository.ListTasks(cl > 1 ? command.Split()[1] : "", tasks);
 
         foreach (var task in result)
         {
@@ -68,6 +61,10 @@ while (true)
             );
         }
     }
+    else if (firstCmd == "exit")
+    {
+        return;
+    }
     else
     {
         Console.WriteLine("Invalid command, try again.");
@@ -77,19 +74,25 @@ while (true)
 static void ShowOptions()
 {
     Console.WriteLine("--------- Task Tracker ---------");
-    Console.WriteLine("Add");
-    Console.WriteLine("Update");
-    Console.WriteLine("Delete");
-    Console.WriteLine("Mark");
-    Console.WriteLine("List");
+    Console.WriteLine("Add      - Add \"Description\"");
+    Console.WriteLine("Update   - Update ID \"Description\"");
+    Console.WriteLine("Delete   - Delete ID");
+    Console.WriteLine("Mark     - Mark-in-progress/done ID");
+    Console.WriteLine("List     - List todo/in-progress/done");
+    Console.WriteLine("Exit     - Close the CLI");
     Console.WriteLine("Choose an option: ");
 }
 
-static string GetDesc(string comand)
+static string GetDesc(string command)
 {
-    var descStart = comand.IndexOf('"');
-    var descEnd = comand.IndexOf('"', descStart + 1);
+    var descStart = command.IndexOf('"');
+    var descEnd = command.IndexOf('"', descStart + 1);
 
-    var desc = comand.Substring(descStart + 1, descEnd - descStart - 1);
+    var desc = command.Substring(descStart + 1, descEnd - descStart - 1);
     return desc;
+}
+
+static int GetId(string command)
+{
+    return Convert.ToInt32(command.Split()[1]);
 }

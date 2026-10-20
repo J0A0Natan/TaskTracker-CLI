@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace TaskTracker.Repository;
 
@@ -13,7 +12,7 @@ internal class TaskRepository
         string jsonSerialized = JsonSerializer.Serialize(tasks, options);
         File.WriteAllText(path, jsonSerialized);
 
-        return(task.Id);
+        return task.Id;
     }
 
     public static void UpdateTask(string path, List<Models.Task> tasks, int id, JsonSerializerOptions options, string desc = "", string status = "")
@@ -29,14 +28,14 @@ internal class TaskRepository
         File.WriteAllText(path, jsonSerialized);
     }
 
-    public static void MarkTask(string path, List<Models.Task> tasks, JsonSerializerOptions options, Models.Task task)
+    public static void DeleteTask(string path, List<Models.Task> tasks, JsonSerializerOptions options, int taskId)
     {
+        var taskToDelete = tasks.FirstOrDefault(t => t.Id == taskId);
+        if (taskToDelete != null)
+            tasks.Remove(taskToDelete);
 
-    }
-
-    public static void DeleteTask(string path, List<Models.Task> tasks, JsonSerializerOptions options, Models.Task task)
-    {
-
+        string jsonSerialized = JsonSerializer.Serialize(tasks, options);
+        File.WriteAllText(path, jsonSerialized);
     }
 
     public static List<Models.Task> ListTasks(string command, List<Models.Task> tasks)
