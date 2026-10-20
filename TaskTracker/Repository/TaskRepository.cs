@@ -4,7 +4,7 @@ namespace TaskTracker.Repository;
 
 internal class TaskRepository
 {
-    public static int AddTask(string path, int lastId, string desc, List<Models.Task> tasks, JsonSerializerOptions options)
+    public static string AddTask(string path, int lastId, string desc, List<Models.Task> tasks, JsonSerializerOptions options)
     {
         lastId++;
         Models.Task task = new(lastId, desc, "todo", DateTime.Now);
@@ -12,30 +12,45 @@ internal class TaskRepository
         string jsonSerialized = JsonSerializer.Serialize(tasks, options);
         File.WriteAllText(path, jsonSerialized);
 
-        return task.Id;
+        return $"Task added successfully (ID: {task.Id})";
     }
 
-    public static void UpdateTask(string path, List<Models.Task> tasks, int id, JsonSerializerOptions options, string desc = "", string status = "")
+    public static string UpdateTask(string path, List<Models.Task> tasks, int taskId, JsonSerializerOptions options, string desc = "", string status = "")
     {
-        var taskToUpdate = tasks.FirstOrDefault(t => t.Id == id);
+        var taskToUpdate = tasks.FirstOrDefault(t => t.Id == taskId);
         if (taskToUpdate != null)
         {
             if (desc != "") taskToUpdate.Description = desc;
             if (status != "") taskToUpdate.Status = status;
             taskToUpdate.UpdateAt = DateTime.Now;
+
+            string jsonSerialized = JsonSerializer.Serialize(tasks, options);
+            File.WriteAllText(path, jsonSerialized);
+
+            return $"Task updated successfully (ID: {taskId})";
         }
-        string jsonSerialized = JsonSerializer.Serialize(tasks, options);
-        File.WriteAllText(path, jsonSerialized);
+        else
+        {
+            return $"Task not found (ID: {taskId})";
+        }
     }
 
-    public static void DeleteTask(string path, List<Models.Task> tasks, JsonSerializerOptions options, int taskId)
+    public static string DeleteTask(string path, List<Models.Task> tasks, JsonSerializerOptions options, int taskId)
     {
         var taskToDelete = tasks.FirstOrDefault(t => t.Id == taskId);
         if (taskToDelete != null)
+        {
             tasks.Remove(taskToDelete);
+            string jsonSerialized = JsonSerializer.Serialize(tasks, options);
+            File.WriteAllText(path, jsonSerialized);
 
-        string jsonSerialized = JsonSerializer.Serialize(tasks, options);
-        File.WriteAllText(path, jsonSerialized);
+            return $"Task deleted successfully (ID: {taskId})";
+        }
+        else
+        {
+            return $"Task not found (ID: {taskId})";
+        }
+            
     }
 
     public static List<Models.Task> ListTasks(string command, List<Models.Task> tasks)

@@ -25,23 +25,24 @@ while (true)
 
     if (firstCmd == "add" && cl > 1)
     {
-        int taskId = TaskRepository.AddTask(path, lastId, GetDesc(command), tasks, options);
-        Console.WriteLine($"Task added successfully (ID: {taskId})");
+        string result = TaskRepository.AddTask(path, lastId, GetDesc(command), tasks, options);
+        Console.WriteLine(result);
     }
     else if (firstCmd == "update" && cl > 2)
     {
-        TaskRepository.UpdateTask(path, tasks, GetId(command), options, desc: GetDesc(command));
-        Console.WriteLine($"Task updated successfully (ID: {GetId(command)})");
+        string result = TaskRepository.UpdateTask(path, tasks, GetId(command), options, desc: GetDesc(command));
+        Console.WriteLine(result);
     }
     else if (firstCmd == "delete" && cl > 1)
     {
-        TaskRepository.DeleteTask(path, tasks, options, GetId(command));
-        Console.WriteLine($"Task deleted successfully (ID: {GetId(command)})");
+        string result = TaskRepository.DeleteTask(path, tasks, options, GetId(command));
+        Console.WriteLine(result);
     }
     else if ((firstCmd == "mark-in-progress" || firstCmd == "mark-done") && cl > 1)
     {
         var newStatus = firstCmd == "mark-in-progress" ? "in-progress" : "done";
-        TaskRepository.UpdateTask(path, tasks, GetId(command), options, status: newStatus);
+        string result = TaskRepository.UpdateTask(path, tasks, GetId(command), options, status: newStatus);
+        Console.WriteLine(result);
     }
     else if (firstCmd == "list")
     {
@@ -57,7 +58,7 @@ while (true)
                 $"\nStatus: {task.Status}" +
                 $"\nCreatedAt: {task.CreatedAt}" +
                 $"\nUpdatedAt: {task.UpdateAt}" +
-                "\n--------------------------------"
+                "\n--------------------------------------"
             );
         }
     }
@@ -73,7 +74,7 @@ while (true)
 
 static void ShowOptions()
 {
-    Console.WriteLine("--------- Task Tracker ---------");
+    Console.WriteLine("------------ Task Tracker ------------");
     Console.WriteLine("Add      - Add \"Description\"");
     Console.WriteLine("Update   - Update ID \"Description\"");
     Console.WriteLine("Delete   - Delete ID");
