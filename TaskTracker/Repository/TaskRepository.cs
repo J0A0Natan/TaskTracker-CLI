@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.InteropServices;
+using System.Text.Json;
 
 namespace TaskTracker.Repository;
 
@@ -15,12 +16,13 @@ internal class TaskRepository
         return(task.Id);
     }
 
-    public static void UpdateTask(string path, List<Models.Task> tasks, int id, string desc, JsonSerializerOptions options)
+    public static void UpdateTask(string path, List<Models.Task> tasks, int id, JsonSerializerOptions options, string desc = "", string status = "")
     {
         var taskToUpdate = tasks.FirstOrDefault(t => t.Id == id);
         if (taskToUpdate != null)
         {
-            taskToUpdate.Description = desc;
+            if (desc != "") taskToUpdate.Description = desc;
+            if (status != "") taskToUpdate.Status = status;
             taskToUpdate.UpdateAt = DateTime.Now;
         }
         string jsonSerialized = JsonSerializer.Serialize(tasks, options);

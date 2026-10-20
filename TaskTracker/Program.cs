@@ -32,16 +32,20 @@ while (true)
     {
         int id = Convert.ToInt32(comand.Split()[1]);
 
-        TaskRepository.UpdateTask(path, tasks, id, GetDesc(comand), options);
+        TaskRepository.UpdateTask(path, tasks, id, options, desc: GetDesc(comand));
         Console.WriteLine($"Task updated successfully (ID: {id})");
     }
     else if (firstCmd == "delete" && cl > 1)
     {
 
     }
-    else if (firstCmd == "mark" && cl > 1)
+    else if ((firstCmd == "mark-in-progress" || firstCmd == "mark-done") && cl > 1)
     {
+        var newStatus = firstCmd == "mark-in-progress" ? "in-progress" : "done";
 
+        int id = Convert.ToInt32(comand.Split()[1]);
+
+        TaskRepository.UpdateTask(path, tasks, id, options, status: newStatus);
     }
     else if (firstCmd == "list")
     {
