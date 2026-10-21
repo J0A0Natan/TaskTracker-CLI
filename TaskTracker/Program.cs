@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using TaskTracker.Repository;
 
 var path = "tasks.json";
@@ -86,11 +87,19 @@ static void ShowOptions()
 
 static string GetDesc(string command)
 {
-    var descStart = command.IndexOf('"');
-    var descEnd = command.IndexOf('"', descStart + 1);
+    Match match = Regex.Match(command, "\".*?\"");
 
-    var desc = command.Substring(descStart + 1, descEnd - descStart - 1);
-    return desc;
+    if (match.Success)
+    {
+        var descStart = command.IndexOf('"');
+        var descEnd = command.IndexOf('"', descStart + 1);
+        var desc = command.Substring(descStart + 1, descEnd - descStart - 1);
+        return desc;
+    }
+    else
+    {
+        return "";
+    }
 }
 
 static int GetId(string command)

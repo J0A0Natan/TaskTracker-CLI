@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using TaskTracker.Models;
 
 namespace TaskTracker.Repository;
 
@@ -6,19 +7,26 @@ internal class TaskRepository
 {
     public static string AddTask(string path, int lastId, string desc, List<Models.Task> tasks, JsonSerializerOptions options)
     {
-        lastId++;
-        Models.Task task = new(lastId, desc, "todo", DateTime.Now);
-        tasks.Add(task);
-        string jsonSerialized = JsonSerializer.Serialize(tasks, options);
-        File.WriteAllText(path, jsonSerialized);
+        if (desc != "")
+        {
+            lastId++;
+            Models.Task task = new(lastId, desc, "todo", DateTime.Now);
+            tasks.Add(task);
+            string jsonSerialized = JsonSerializer.Serialize(tasks, options);
+            File.WriteAllText(path, jsonSerialized);
 
-        return $"Task added successfully (ID: {task.Id})";
+            return $"Task added successfully (ID: {task.Id})";
+        }
+        else
+        {
+            return "Invalid operation, try again.";
+        }
     }
 
     public static string UpdateTask(string path, List<Models.Task> tasks, int taskId, JsonSerializerOptions options, string desc = "", string status = "")
     {
         var taskToUpdate = tasks.FirstOrDefault(t => t.Id == taskId);
-        if (taskToUpdate != null)
+        if (taskToUpdate != null && desc != "")
         {
             if (desc != "") taskToUpdate.Description = desc;
             if (status != "") taskToUpdate.Status = status;
@@ -31,7 +39,10 @@ internal class TaskRepository
         }
         else
         {
-            return $"Task not found (ID: {taskId})";
+            if (desc != "")
+                return $"Task not found (ID: {taskId})";
+            else
+                return "Invalid operation, try again.";
         }
     }
 
