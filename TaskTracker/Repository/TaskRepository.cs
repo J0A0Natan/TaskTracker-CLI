@@ -26,10 +26,11 @@ internal class TaskRepository
     public static string UpdateTask(string path, List<Models.Task> tasks, int taskId, JsonSerializerOptions options, string desc = "", string status = "")
     {
         var taskToUpdate = tasks.FirstOrDefault(t => t.Id == taskId);
-        if (taskToUpdate != null && desc != "")
+        if (taskToUpdate != null)
         {
             if (desc != "") taskToUpdate.Description = desc;
-            if (status != "") taskToUpdate.Status = status;
+            else if (status != "") taskToUpdate.Status = status;
+            else return "Invalid operation, try again.";
             taskToUpdate.UpdateAt = DateTime.Now;
 
             string jsonSerialized = JsonSerializer.Serialize(tasks, options);
@@ -39,10 +40,7 @@ internal class TaskRepository
         }
         else
         {
-            if (desc != "")
-                return $"Task not found (ID: {taskId})";
-            else
-                return "Invalid operation, try again.";
+            return $"Task not found (ID: {taskId})";
         }
     }
 
